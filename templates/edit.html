@@ -1,0 +1,87 @@
+{{ define "body"}}
+<div class="container-fluid">
+
+ <div class="col-sm-5">
+
+			<h3 class="page-header">Edit user</h3>			
+		    <form id="editUserFrm" action="/updateUser" method="POST">
+		  	  <input type="hidden" name="id" value="{{.Id}}" ><span class="help-block"></span>
+			  <div id="firstNameFrmGroup" class="form-group">
+			    <label for="firstName">First Name</label>
+			    <input type="text" class="form-control" name="firstName" value="{{.FirstName}}" ><span class="help-block"></span>
+			  </div>
+			  <div id="lastNameFrmGroup" class="form-group">
+			    <label for="lastName">Last Name</label>
+			    <input type="text" class="form-control" name="lastName" value="{{.LastName}}" ><span class="help-block"></span>
+			  </div>
+			  <div id="usernameFrmGroup" class="form-group">
+			    <label for="username">Username</label>
+			    <input type="text" class="form-control" name="username" value="{{.Username}}"><span class="help-block"></span>
+			  </div>
+			  <div id="passwordFrmGroup" class="form-group">
+			    <label for="exampleInputPassword1">Password</label>
+			    <input type="password" class="form-control" name="password" value="{{.Password}}"><span class="help-block"></span>
+			  </div>
+			
+			  <button id="btnBack" type="button" class="btn btn-primary">Back</button>
+			  <button id="btnUpdate" type="button" class="btn btn-primary">Submit</button>
+			</form>
+
+
+ </div>
+
+</div>
+
+<script>
+
+   $(document).ready(function(){
+	
+	  $("#btnBack").click(function(){
+		   
+		    window.location.replace("/users")
+		 
+		});
+		
+	  $("#btnUpdate").click(function(){
+		
+		var dataform = $("#editUserFrm").serialize();
+		
+		$.ajax({
+		            	url:"/updateUser",
+			  			  data:dataform,
+			  			  type:"POST",
+			  			  //contentType: "application/json",			  
+			  			  success: function(response,status) {
+			  			
+			  				$('#createUserFrm').find('.form-group').removeClass('has-error');
+			  				$('#createUserFrm').find('.form-sub-group').removeClass('has-error');
+					        $('#createUserFrm').find('.help-block').empty();
+			  				  
+			  			  	console.log('result='+response+',status='+status);
+							console.log('res status='+response.Status);
+								
+			  			  	if (response.Status == 'FAIL') {
+			  			  		if (response.ErrorMessage !='' && response.ErrorMessage != null){
+			  			  			alert(response.ErrorMessage);
+			  			  		}
+				  				for (var i = 0; i < response.ErrorsList.length; i++) {
+					  				var item = response.ErrorsList[i];
+					  				var $formGroup = $('#' + item.FieldName+'FrmGroup');
+					  				$formGroup.addClass('has-error');
+					  				$formGroup.find('.help-block').html(item.ErrorMessage);
+				  				}
+				  			} else {
+				  				// redirect here ...... 
+				  				alert("User successfully updated")
+								window.location.replace("/users")
+			  				}
+			  			  }
+			  		});		
+		
+	  });
+	
+   });
+
+ </script>
+
+{{ end }}
